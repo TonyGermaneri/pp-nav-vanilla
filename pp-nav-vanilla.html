@@ -1,0 +1,82 @@
+<!-- Defines element markup -->
+<template id="navbody">
+    <style>
+        :host {
+            all: initial;
+            display: block;
+            background: var(--nav-background, tan);
+            border: solid 2px black;
+        }
+        :host-context(.dark) {
+            background: var(--nav-background, navy);
+        }
+        li {
+            display: inline-block;
+            background: var(--nav-link-background, white);
+        }
+    </style>
+    <ul></ul>
+</template>
+<template id="navitem">
+    <li><a></a></li>
+</template>
+<script>
+(function(window, document, undefined) {
+    /*jslint browser: true*/
+    // Refers to the "importer", which is the page using the compoent
+    var hostDocument = document;
+    // Refers to the "importee", which is this document
+    var clientDocument =  (hostDocument._currentScript || hostDocument.currentScript).ownerDocument;
+    // Fetch DOM from templates
+    var navbodyTemplate = clientDocument.querySelector('#navbody').content;
+    var navitemTemplate = clientDocument.querySelector('#navitem').content;
+    // Creates an object based in the HTML Element prototype
+    var PPNav = Object.create(HTMLElement.prototype);
+    // Fires when an instance of the element is created
+    PPNav.createdCallback = function() {
+        // Creates the shadow root
+        var shadowRoot = this.createShadowRoot();
+        this.shadowRoot = shadowRoot;
+        // Creates the "data" attribute
+        Object.defineProperty(PPNav, 'data', {
+            get: function () {
+                return data;
+            },
+            set: function (val) {
+                if (typeof val === 'string') {
+                    val = JSON.parse(val);
+                }
+                this._data = val;
+                this.refresh();
+            }
+        });
+        // Checks if the "data" attribute has been used prior to instantiation
+        if (this.hasAttribute('data')) {
+            var data = this.getAttribute('data');
+            this.data = data;
+        }
+    };
+    // Fires when an attribute was added, removed, or updated
+    PPNav.attributeChangedCallback = function (attr, oldVal, newVal) {
+        this[attr] = newVal;
+    };
+    // Sets new value to "who" attribute
+    PPNav.refresh = function() {
+        // Adds a template clone into shadow root
+        var template = hostDocument.importNode(navbodyTemplate, true);
+        var ul = template.querySelector('ul');
+        this._data.forEach(function (item) {
+            var navItem = hostDocument.importNode(navitemTemplate, true);
+            var a = navItem.querySelector('a');
+            a.innerHTML = item.title;
+            a.href = item.url;
+            ul.appendChild(navItem);
+        });
+        this.shadowRoot.appendChild(template);
+    };
+    // Registers <pp-nav>
+    window.MyElement = hostDocument.registerElement('pp-nav', {
+        prototype: PPNav
+    });
+})(window, document);
+</script>

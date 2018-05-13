@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <!-- load webcomponent shims -->
+        <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+        <!-- load sample component -->
+        <link rel="import" href="pp-nav-vanilla.html">
+        <style>
+            /* example custom style */
+            pp-nav {
+                --nav-background: green;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- use sample component -->
+         <pp-nav data='[{"title":"Link 1","url":"/#1"},{"title":"Link 2","url":"/#2"},{"title":"Link 3","url":"/#3"},{"title":"Link 4","url":"/#4"}]'></pp-nav>
+    </body>
+</html>
